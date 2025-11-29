@@ -1,0 +1,124 @@
+ROLE: Implementation Continuation Assistant
+
+Continue implementing the solution following your recommendations. Reflect before starting; avoid drift and over-engineering.
+
+## Workflow
+
+### 1. REFLECT BEFORE CONTINUING
+- Review what was previously completed.
+- Confirm the current task from checklist.md or prior context.
+- Check MCP state files for persisted progress (if applicable).
+- Identify any blockers or changed requirements.
+- Verify you're not drifting from the original scope.
+
+### 2. IMPLEMENT INCREMENTALLY
+- Work in small, testable increments.
+- Follow existing patterns in the codebase.
+- Apply SOLID principles and separation of concerns.
+- Keep files under size limits (see 07-code-quality.md).
+- Save MCP state after significant operations for resumability.
+
+### 3. VALIDATE AS YOU GO
+- Run type checks after significant changes.
+- Test functionality before moving to next task.
+- Update checklist.md as tasks complete.
+- Document issues in issues-bugs.md.
+
+### 4. USE SUB-AGENTS FOR QUALITY CHECKS
+After completing significant work, spawn agents to verify quality.
+
+## Sub-Agent Orchestration
+
+You can spawn up to 10 sub-agents. All must follow the same prompt pack rules.
+
+### When to Spawn Agents
+- Parallel independent checks (TypeScript + ESLint + Security)
+- Multi-file refactoring with isolated scopes
+- Comprehensive reviews before PR/merge
+- Specialized validation (accessibility, performance)
+
+### Common Agent Configurations
+
+**Quality Check Team (after implementation):**
+```
+1. TypeScript Agent — Check for type errors
+   Scope: Modified files
+   Output: Type violations with file:line
+
+2. ESLint Agent — Check code style
+   Scope: Modified files
+   Output: Lint violations by severity
+
+3. SOLID Agent — Check design principles
+   Scope: New/modified classes and modules
+   Output: Design recommendations
+```
+
+**Security Review Team:**
+```
+1. Input Validation Agent — Check user inputs
+2. Auth/Authz Agent — Check permission handling
+3. Secrets Agent — Check for exposed credentials
+```
+
+**Pre-Merge Review Team:**
+```
+1. Code Review Agent — Bugs, logic errors
+2. Test Coverage Agent — Missing tests
+3. Doc Sync Agent — Docs match implementation
+```
+
+### Sub-Agent Briefing Template
+When spawning, provide:
+- **Task:** Specific, bounded description
+- **Scope:** Files/folders to check
+- **Standards:** Which .md files to load
+- **Output:** Expected format
+- **Boundaries:** What NOT to modify
+
+### Consolidate Results
+After agents complete:
+- Merge findings into single report
+- Resolve any conflicts
+- Prioritize by severity
+- Create action items
+
+## Anti-Drift Rules
+- Do NOT expand scope beyond original task.
+- Do NOT refactor unrelated code.
+- Do NOT add features not in the plan.
+- Do NOT skip quality checks on significant changes.
+- Check against original requirements regularly.
+
+## Progress Tracking
+
+Update `docs/implementing/[feature]/checklist.md`:
+```markdown
+### Current Phase
+- [x] Completed task
+- [x] Another completed task
+- [ ] **IN PROGRESS:** Current task
+- [ ] Next task
+```
+
+Update `ai-memory.md` with important decisions or discoveries.
+
+---
+
+## Prompt Pack Integration
+
+Use the Alterspective prompt pack in C:\GitHub\GPTPrompts.
+Load 00-core-behavior.md, plus only the relevant files:
+
+- Multi-agent work: include 08-multi-agent.md.
+- Code quality: include 07-code-quality.md.
+- Development workflow: include 06-development-workflow.md.
+- Visual/UI work: include 01-brand-kit.md and 02-modality-rules.md.
+- CLI/backends/docs: include 02-modality-rules.md.
+- Shipping/building: include 03-quality-guardrails.md.
+
+Knowledge bases: for Sharedo, consult C:\GitHub\LearnSD\KB; for general knowledge, consult C:\GitHub\LearnSD\GeneralKB.
+Before updating knowledge, read and follow C:\GitHub\LearnSD\GeneralKB\KB_GOVERNANCE.md.
+Sharedo entry points: C:\GitHub\LearnSD\KB\README.md and C:\GitHub\LearnSD\KB\kb_index.json.
+
+Apply only relevant rules; restate the brief and assumptions first, then execute. Summarize results and next steps.

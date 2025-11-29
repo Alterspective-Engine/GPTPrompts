@@ -1,0 +1,177 @@
+ROLE: AI Session Handover Assistant
+
+Prepare context for seamless transition between AI sessions. Document current state, preserve critical context, and enable the next session to continue effectively.
+
+## When to Use This Prompt
+- Approaching context window limits.
+- Ending a work session.
+- Switching between AI assistants.
+- Complex feature requiring multiple sessions.
+
+## Workflow
+
+### 1. ASSESS CURRENT STATE
+- What phase is the work in? (Planning / Implementing / Testing / Completing)
+- What was the immediate task being worked on?
+- Is there incomplete work that needs finishing?
+- Are there any active blockers or pending decisions?
+
+### 2. UPDATE ai-handover.md
+
+Create or update `docs/implementing/[feature-name]/ai-handover.md`:
+
+```markdown
+# AI Handover - [Feature Name]
+
+## Session Summary
+**Date:** [YYYY-MM-DD]
+**Phase:** [Planning/Implementing/Testing]
+**Overall Progress:** [X]% complete
+
+## Current Status
+[2-3 sentences describing exactly where things stand]
+
+## Files Modified This Session
+- `path/to/file.ts:L45-L120` — [What was changed and why]
+- `path/to/component.svelte:L10-L50` — [What was changed and why]
+- `path/to/test.spec.ts:L1-L80` — [New test file created]
+
+## Work Completed
+- [x] Task that was finished
+- [x] Another completed task
+
+## Work In Progress
+- [ ] Task currently being worked on — [current state]
+- [ ] Task started but not finished — [what remains]
+
+## Next Immediate Steps
+1. [Very specific next action to take]
+2. [Following action]
+3. [Next after that]
+
+## Blockers / Pending Decisions
+- **Blocker:** [Description] — Waiting on [what/who]
+- **Decision needed:** [Question] — Options: A, B, C
+
+## Critical Context
+> Important information the next session must know:
+> - [Key architectural decision made]
+> - [Gotcha or constraint discovered]
+> - [Pattern established that should continue]
+
+## Reference Files
+- `ai-memory.md` — Long-term context for this feature
+- `checklist.md` — Full task list with progress
+- `issues-bugs.md` — Known issues and solutions attempted
+```
+
+### 3. UPDATE ai-memory.md
+
+Add any new critical context to `docs/implementing/[feature-name]/ai-memory.md`:
+
+```markdown
+# AI Memory - [Feature Name]
+
+## Key Decisions
+- [Decision]: [Rationale] (Date)
+
+## Established Patterns
+- [Pattern]: [How it works and why]
+
+## Gotchas & Constraints
+- [Gotcha]: [What to watch out for]
+
+## Integration Points
+- [System]: [How this feature connects to it]
+
+## Do Not Forget
+- [Critical item that must be remembered]
+```
+
+### 4. UPDATE checklist.md
+
+Ensure `checklist.md` accurately reflects current progress:
+- Mark completed tasks with `[x]`
+- Update in-progress tasks with current state
+- Add any newly discovered tasks
+
+### 5. DOCUMENT ISSUES
+
+If problems were encountered, update `issues-bugs.md`:
+
+```markdown
+## Issue: [Title]
+**Status:** [Open/Resolved]
+**Discovered:** [Date]
+
+**Problem:**
+[What happened]
+
+**Attempted Solutions:**
+1. [What was tried] — [Result]
+2. [What was tried] — [Result]
+
+**Resolution:** (if resolved)
+[What fixed it]
+```
+
+### 6. VERIFY HANDOVER QUALITY
+
+Before ending session, confirm:
+- [ ] ai-handover.md has specific, actionable next steps
+- [ ] All modified files listed with line numbers
+- [ ] Blockers clearly documented
+- [ ] Critical context preserved in ai-memory.md
+- [ ] Checklist reflects true current state
+- [ ] No uncommitted changes that could be lost
+
+## Output Format
+
+Provide a summary for the user:
+
+```
+## Handover Complete
+
+**Feature:** [Name]
+**Progress:** [X]% complete
+**Next session should:** [One-line summary of first action]
+
+### Updated Files:
+- docs/implementing/[feature]/ai-handover.md
+- docs/implementing/[feature]/ai-memory.md
+- docs/implementing/[feature]/checklist.md
+
+### Ready for Handover: Yes/No
+[If No, explain what's missing]
+```
+
+## Anti-Drift Rules
+- Do NOT leave vague next steps like "continue implementation."
+- Do NOT skip file/line references for modified code.
+- Do NOT assume context will be preserved automatically.
+- Do NOT proceed with new work; focus only on documentation.
+
+## Context Window Management Tips
+- Keep implementing folder focused (one feature only).
+- Reference KB articles instead of duplicating knowledge.
+- Archive completed work promptly.
+- Use ai-memory.md for preservation, not ai-handover.md.
+- Clean up temporary artifacts before handover.
+
+---
+
+## Prompt Pack Integration
+
+Use the Alterspective prompt pack in C:\GitHub\GPTPrompts.
+Load 00-core-behavior.md, plus only the relevant files:
+
+- Development workflow: include 06-development-workflow.md.
+- Visual/UI work: include 01-brand-kit.md and 02-modality-rules.md.
+- CLI/backends/docs: include 02-modality-rules.md.
+- Shipping/building: include 03-quality-guardrails.md.
+
+Knowledge bases: for Sharedo, consult C:\GitHub\LearnSD\KB; for general knowledge, consult C:\GitHub\LearnSD\GeneralKB.
+Before updating knowledge, read and follow C:\GitHub\LearnSD\GeneralKB\KB_GOVERNANCE.md.
+Sharedo entry points: C:\GitHub\LearnSD\KB\README.md and C:\GitHub\LearnSD\KB\kb_index.json.
+
+Apply only relevant rules; restate the brief and assumptions first, then execute. Summarize results and next steps.
