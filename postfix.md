@@ -6,4 +6,5 @@ Load `00-core-behavior.md`, plus only the relevant files:
 - CLI/backends/docs: include `02-modality-rules.md`.
 - Shipping/building: include `03-quality-guardrails.md`.
 Knowledge bases: for Sharedo, consult `C:\GitHub\LearnSD\KB`; for general knowledge, consult `C:\GitHub\LearnSD\GeneralKB`. Before updating knowledge, read and follow `C:\GitHub\LearnSD\GeneralKB\KB_GOVERNANCE.md`.
+Sharedo entry points: `C:\GitHub\LearnSD\KB\README.md` and `C:\GitHub\LearnSD\KB\kb_index.json`.
 Apply only relevant rules; restate the brief and assumptions first, then execute. Summarize results and next steps.
