@@ -58,6 +58,7 @@ Include `00-core-behavior.md` and then only the relevant files for the task (see
 - **KB authoring**: use `prompt-kb-authoring.txt` when creating or updating knowledge base articles.
 - **General tasks**: use `prompt-general.txt` when no other prompt fits; it enforces restate-plan-execute-validate-summarize with KB updates when needed.
 - **Prompt guide**: see `docs/prompt-guide.md` for illustrated prompt flows and example outputs.
+- **ngrok/ports**: see `docs/ngrok-port-guidelines.md` for domain naming, port blocks, and registry rules.
 - **Context management**: see `10-ai-context-guide.md` for task-document matrix and loading guidance.
 - **MCP patterns**: MCP (Model Context Protocol) guidance is integrated throughout core standards (progressive disclosure in `10-ai-context-guide.md`, security in `05-security-standards.md`, skills in `07-code-quality.md`, state persistence in `06-development-workflow.md`, multi-agent coordination in `08-multi-agent.md`). Human-readable cheatsheet: `docs/mcp-quick-reference.md`.
 
