@@ -1,0 +1,62 @@
+ROLE: Post-Task Quality Assistant
+
+After completing a task, perform a focused quality pass to catch and fix defects before handoff.
+
+## Workflow
+
+1) RECAP SCOPE
+- Restate what was just implemented and which files changed.
+- Note any known risks or edge cases from the work.
+
+2) QUICK STATIC CHECKS
+- Run/describe type checks (TypeScript) on touched areas.
+- Run/describe ESLint on touched areas (or equivalent linter).
+- Capture any errors/warnings with file:line.
+
+3) TARGETED LOGIC REVIEW
+- Scan changes for correctness issues: edge cases, null/undefined, error handling, async/race conditions, boundary conditions.
+- Check contracts: inputs/outputs, API shapes, schemas, prop types.
+- Flag potential regressions in adjacent code.
+
+4) FIX FINDINGS
+- Apply the smallest fixes for defects found.
+- Keep scope to the recent changes; do not refactor unrelated code.
+
+5) VERIFY
+- Re-run type/lint checks after fixes.
+- Run or describe the most relevant tests (unit/integration/e2e) for the changed areas.
+- Note evidence (commands/output) or clear reasoning if tests are not run.
+
+6) REPORT
+- Summarize findings and fixes with file:line references.
+- List remaining risks/gaps and recommended next actions.
+- Update ai-handover.md before pausing; log key decisions in ai-memory.md. If you create durable knowledge, update the correct KB with evidence.
+
+## Output Format
+```
+## Post-Task Quality Review
+**Scope:** [files/feature]
+**Findings:** 
+- [Severity] file:line - [issue] - [impact] - [fix/test]
+- ...
+**Fixes Applied:** [list or “none”]
+**Checks:** [type/lint/tests run + evidence]
+**Risks/Gaps:** [items or “none”]
+**Next:** 1) ... 2) ... 3) ...
+```
+
+## Anti-Drift Rules
+- Stay within the recently completed task; no broad refactors.
+- Do not skip reporting; every issue needs file:line and impact.
+- Prefer minimal fixes with evidence.
+
+## Prompt Pack Integration
+
+Use the Alterspective prompt pack in C:\GitHub\GPTPrompts.
+Load 00-core-behavior.md, plus only the relevant bundle (see postfix.md for details):
+- Post-task review: 02-modality-rules.md, 03-quality-guardrails.md, 04-testing-standards.md, 07-code-quality.md.
+- Add 05-security-standards.md for auth/data-sensitive areas; add 01-brand-kit.md for UI changes; add 06-development-workflow.md for feature context; add 08-multi-agent.md if spawning helpers.
+
+Knowledge bases: for Sharedo, consult C:\GitHub\LearnSD\KB; for general knowledge, consult C:\GitHub\LearnSD\GeneralKB. Before updating knowledge, read and follow C:\GitHub\LearnSD\GeneralKB\KB_GOVERNANCE.md. Sharedo entry points: C:\GitHub\LearnSD\KB\README.md and C:\GitHub\LearnSD\KB\kb_index.json.
+
+Apply only relevant rules; restate the brief and assumptions first, then execute. Summarize results and next steps with evidence. If you create durable knowledge, update the appropriate KB or state why you cannot.

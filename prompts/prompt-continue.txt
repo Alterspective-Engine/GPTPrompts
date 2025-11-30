@@ -22,7 +22,8 @@ Continue implementing the solution following your recommendations. Reflect befor
 - Run type checks after significant changes.
 - Test functionality before moving to next task.
 - Update checklist.md as tasks complete.
-- Document issues in issues-bugs.md.
+- Document issues in issues-bugs.md and update ai-handover.md before pausing.
+- Capture key decisions/risks in ai-memory.md; if you generate durable knowledge, update the correct KB per governance with evidence.
 
 ### 4. USE SUB-AGENTS FOR QUALITY CHECKS
 After completing significant work, spawn agents to verify quality.
@@ -41,31 +42,31 @@ You can spawn up to 10 sub-agents. All must follow the same prompt pack rules.
 
 **Quality Check Team (after implementation):**
 ```
-1. TypeScript Agent — Check for type errors
+1. TypeScript Agent - Check for type errors
    Scope: Modified files
    Output: Type violations with file:line
 
-2. ESLint Agent — Check code style
+2. ESLint Agent - Check code style
    Scope: Modified files
    Output: Lint violations by severity
 
-3. SOLID Agent — Check design principles
+3. SOLID Agent - Check design principles
    Scope: New/modified classes and modules
    Output: Design recommendations
 ```
 
 **Security Review Team:**
 ```
-1. Input Validation Agent — Check user inputs
-2. Auth/Authz Agent — Check permission handling
-3. Secrets Agent — Check for exposed credentials
+1. Input Validation Agent - Check user inputs
+2. Auth/Authz Agent - Check permission handling
+3. Secrets Agent - Check for exposed credentials
 ```
 
 **Pre-Merge Review Team:**
 ```
-1. Code Review Agent — Bugs, logic errors
-2. Test Coverage Agent — Missing tests
-3. Doc Sync Agent — Docs match implementation
+1. Code Review Agent - Bugs, logic errors
+2. Test Coverage Agent - Missing tests
+3. Doc Sync Agent - Docs match implementation
 ```
 
 ### Sub-Agent Briefing Template
@@ -108,17 +109,12 @@ Update `ai-memory.md` with important decisions or discoveries.
 ## Prompt Pack Integration
 
 Use the Alterspective prompt pack in C:\GitHub\GPTPrompts.
-Load 00-core-behavior.md, plus only the relevant files:
+Load 00-core-behavior.md, plus only the relevant bundle (see postfix.md for details):
+- Implementation/Continuation: 02-modality-rules.md, 03-quality-guardrails.md, 04-testing-standards.md, 06-development-workflow.md, 07-code-quality.md.
+- Add 05-security-standards.md for auth/data-sensitive changes.
+- Add 01-brand-kit.md for UI work.
+- Add 08-multi-agent.md when spawning sub-agents.
 
-- Multi-agent work: include 08-multi-agent.md.
-- Code quality: include 07-code-quality.md.
-- Development workflow: include 06-development-workflow.md.
-- Visual/UI work: include 01-brand-kit.md and 02-modality-rules.md.
-- CLI/backends/docs: include 02-modality-rules.md.
-- Shipping/building: include 03-quality-guardrails.md.
+Knowledge bases: for Sharedo, consult C:\GitHub\LearnSD\KB; for general knowledge, consult C:\GitHub\LearnSD\GeneralKB. Before updating knowledge, read and follow C:\GitHub\LearnSD\GeneralKB\KB_GOVERNANCE.md. Sharedo entry points: C:\GitHub\LearnSD\KB\README.md and C:\GitHub\LearnSD\KB\kb_index.json.
 
-Knowledge bases: for Sharedo, consult C:\GitHub\LearnSD\KB; for general knowledge, consult C:\GitHub\LearnSD\GeneralKB.
-Before updating knowledge, read and follow C:\GitHub\LearnSD\GeneralKB\KB_GOVERNANCE.md.
-Sharedo entry points: C:\GitHub\LearnSD\KB\README.md and C:\GitHub\LearnSD\KB\kb_index.json.
-
-Apply only relevant rules; restate the brief and assumptions first, then execute. Summarize results and next steps.
+Apply only relevant rules; restate the brief and assumptions first, then execute. Summarize results and next steps with evidence. If you create durable knowledge, update the appropriate KB or state why you cannot.

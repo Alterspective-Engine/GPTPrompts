@@ -163,15 +163,10 @@ Provide a summary for the user:
 ## Prompt Pack Integration
 
 Use the Alterspective prompt pack in C:\GitHub\GPTPrompts.
-Load 00-core-behavior.md, plus only the relevant files:
+Load 00-core-behavior.md, plus only the relevant bundle (see postfix.md for details):
+- Handover: 03-quality-guardrails.md, 06-development-workflow.md, 10-ai-context-guide.md.
+- Add 02-modality-rules.md for CLI/docs context; add 01-brand-kit.md if UI context matters.
 
-- Development workflow: include 06-development-workflow.md.
-- Visual/UI work: include 01-brand-kit.md and 02-modality-rules.md.
-- CLI/backends/docs: include 02-modality-rules.md.
-- Shipping/building: include 03-quality-guardrails.md.
+Knowledge bases: for Sharedo, consult C:\GitHub\LearnSD\KB; for general knowledge, consult C:\GitHub\LearnSD\GeneralKB. Before updating knowledge, read and follow C:\GitHub\LearnSD\GeneralKB\KB_GOVERNANCE.md. Sharedo entry points: C:\GitHub\LearnSD\KB\README.md and C:\GitHub\LearnSD\KB\kb_index.json.
 
-Knowledge bases: for Sharedo, consult C:\GitHub\LearnSD\KB; for general knowledge, consult C:\GitHub\LearnSD\GeneralKB.
-Before updating knowledge, read and follow C:\GitHub\LearnSD\GeneralKB\KB_GOVERNANCE.md.
-Sharedo entry points: C:\GitHub\LearnSD\KB\README.md and C:\GitHub\LearnSD\KB\kb_index.json.
-
-Apply only relevant rules; restate the brief and assumptions first, then execute. Summarize results and next steps.
+Apply only relevant rules; restate the brief and assumptions first, then execute. Summarize results and next steps with evidence. If you create durable knowledge, update the appropriate KB or state why you cannot.

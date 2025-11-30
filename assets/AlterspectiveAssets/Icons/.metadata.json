@@ -1,0 +1,10 @@
+{
+  "$schema": "../../packages/assets/schemas/asset-metadata.schema.json",
+  "name": "Alterspective Icons",
+  "category": "icon",
+  "usage": ["ui", "outline", "24dp"],
+  "version": "1.0.0",
+  "source": "Icons/",
+  "licensing": "© Alterspective. All rights reserved.",
+  "notes": "Outlined icons set baseline; consistent stroke 1.5px @24dp."
+}
