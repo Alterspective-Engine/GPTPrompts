@@ -35,3 +35,6 @@ Authoritative location for operational prompts. Core standards (`00-*.md` .. `10
 - `prompt-architecture-audit.txt`
 - `prompt-implementation-orchestration.txt`
 - `prompt-post-task-review.txt`
+- `prompt-deploy-azure.txt`
+- `prompt-ui-quality.txt`
+- `prompt-ngrok-ports.txt`
