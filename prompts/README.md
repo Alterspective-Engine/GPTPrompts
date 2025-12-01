@@ -16,7 +16,8 @@ Authoritative location for operational prompts. Core standards (`00-*.md` .. `10
 ## Usage
 - Always load `00-core-behavior.md` plus the relevant standards bundle (see `postfix.md`).
 - Keep scope tight: restate brief, apply only relevant rules, summarize with evidence.
-- Update knowledge bases with evidence when creating durable knowledge; follow `C:\GitHub\LearnSD\GeneralKB\KB_GOVERNANCE.md`.
+- Most prompts include a Lite mode for small/low-risk tasks: keep outputs concise, skip artifact creation, and avoid spawning sub-agents unless needed.
+- Update knowledge bases with evidence when creating durable knowledge; follow `C:\GitHub\LearnSD\GeneralKB\KB_GOVERNANCE.md` and proceed without KB updates if paths are unavailable (note when skipped).
 
 ## Current Prompts
 - `prompt-plan.txt`
@@ -37,4 +38,4 @@ Authoritative location for operational prompts. Core standards (`00-*.md` .. `10
 - `prompt-post-task-review.txt`
 - `prompt-deploy-azure.txt`
 - `prompt-ui-quality.txt`
-- `prompt-ngrok-ports.txt`
+- `prompt-expose-ngrok.txt`
