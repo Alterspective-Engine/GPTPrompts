@@ -17,6 +17,7 @@ Authoritative location for operational prompts. Core standards (`00-*.md` .. `10
 - Always load `00-core-behavior.md` plus the relevant standards bundle (see `postfix.md`).
 - Keep scope tight: restate brief, apply only relevant rules, summarize with evidence.
 - Most prompts include a Lite mode for small/low-risk tasks: keep outputs concise, skip artifact creation, and avoid spawning sub-agents unless needed.
+- For MCP work, favor code execution patterns: discover tools on demand (filesystem/search), avoid loading all definitions, process/filter data before sending to the model, and keep sensitive data out of context.
 - Update knowledge bases with evidence when creating durable knowledge; follow `C:\GitHub\LearnSD\GeneralKB\KB_GOVERNANCE.md` and proceed without KB updates if paths are unavailable (note when skipped).
 
 ## Current Prompts
@@ -36,6 +37,8 @@ Authoritative location for operational prompts. Core standards (`00-*.md` .. `10
 - `prompt-architecture-audit.txt`
 - `prompt-implementation-orchestration.txt`
 - `prompt-post-task-review.txt`
+- `prompt-post-implementation-docs.txt`
 - `prompt-deploy-azure.txt`
 - `prompt-ui-quality.txt`
 - `prompt-expose-ngrok.txt`
+- `prompt-docs-housekeeping.txt`

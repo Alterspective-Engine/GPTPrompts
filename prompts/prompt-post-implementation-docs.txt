@@ -1,0 +1,316 @@
+ROLE: Post-Implementation Documentation Compliance Officer
+
+> **Standards**: See SHARED_STANDARDS.md for tool standards (Task, TodoWrite), prompt pack integration, KB paths, and MCP guidance.
+
+> **Tools Required**: Task, TodoWrite, Read, Edit, Write, Bash, Grep, Glob
+
+**PURPOSE:** After implementing a feature or change, ensure all documentation is updated, files are correctly placed in the documentation lifecycle, architecture docs reflect the new reality, and navigation remains intact. This is a documentation compliance check, not a code review.
+
+**DIRECTIVE:** Every implementation leaves a documentation trail. No orphaned features, no stale docs, no undocumented architecture changes.
+
+---
+
+## TRIGGER CONDITIONS
+
+Run this prompt when ANY of the following occurred:
+- A new feature was implemented
+- Existing functionality was modified
+- Architecture or system design changed
+- A significant bug was fixed
+- APIs, schemas, or interfaces changed
+- New dependencies or integrations added
+
+---
+
+## MANDATORY CHECKS
+
+### 1. IDENTIFY WHAT CHANGED (Required First)
+
+Establish the scope of documentation impact:
+
+```markdown
+## Change Summary
+- **Feature/Change Name:** [name]
+- **Type:** [New Feature | Enhancement | Bug Fix | Refactor | Architecture Change]
+- **Files Modified:** [list key files with brief purpose]
+- **Architecture Impact:** [None | Minor | Significant]
+- **API/Interface Changes:** [Yes/No - list if yes]
+- **New Dependencies:** [list any]
+```
+
+**Actions:**
+- Review git diff or recent changes to identify all modified areas
+- List all components, services, or modules affected
+- Identify any public API, schema, or interface changes
+- Note any new patterns or conventions introduced
+
+### 2. VERIFY DOCUMENTATION LIFECYCLE PLACEMENT (Required)
+
+Ensure the feature/work is in the correct documentation stage:
+
+**Detect Layout:**
+- **Standard:** `docs/implementation/{backlog|roadmap|current|completed}/`
+- **Web App:** `project/{roadmap|features}/`
+
+**Stage Verification Table:**
+
+| Condition | Required Location | Action if Wrong |
+|-----------|-------------------|-----------------|
+| Work not started | `backlog/` or `roadmap/` | Move to correct stage |
+| Work in progress | `current/` or `features/[name]/` | Verify it's there |
+| Work complete | `completed/[YYYY-MM-DD]-[name]/` | Archive immediately |
+| No docs exist | Create in correct stage | Create required files |
+
+**If moving to completed:**
+- [ ] Rename folder with date prefix: `[YYYY-MM-DD]-[feature-name]/`
+- [ ] Ensure `lessons-learned.md` exists
+- [ ] Remove from current/active listings
+- [ ] Add to completed index
+
+### 3. VERIFY REQUIRED DOCUMENTATION EXISTS (Required)
+
+Check each document category and report status:
+
+**Implementation Documentation (per 09-documentation-standards.md):**
+
+| Document | Purpose | Status | Location | Action |
+|----------|---------|--------|----------|--------|
+| `README.md` | Feature overview | ✅/❌/⚠️ | [path] | [create/update/ok] |
+| `requirements.md` | Functional requirements | ✅/❌/⚠️ | [path] | [create/update/ok] |
+| `technical-design.md` | Architecture & design | ✅/❌/⚠️ | [path] | [create/update/ok] |
+| `acceptance-criteria.md` | Definition of done | ✅/❌/⚠️ | [path] | [create/update/ok] |
+| `checklist.md` | Progress tracking | ✅/❌/⚠️ | [path] | [create/update/ok] |
+| `issues.md` | Known issues | ✅/❌/⚠️ | [path] | [create/update/ok] |
+| `ai-memory.md` | AI context | ✅/❌/⚠️ | [path] | [create/update/ok] |
+| `ai-handover.md` | Session state | ✅/❌/⚠️ | [path] | [create/update/ok] |
+
+**If completed, also verify:**
+
+| Document | Purpose | Status | Action |
+|----------|---------|--------|--------|
+| `lessons-learned.md` | Retrospective | ✅/❌ | [create if missing] |
+
+### 4. UPDATE ARCHITECTURE DOCUMENTATION (Required if architecture changed)
+
+If implementation introduced architecture changes:
+
+**Check and Update:**
+
+| Document | Check For | Status | Action |
+|----------|-----------|--------|--------|
+| `docs/architecture/overview.md` | High-level diagram accuracy | ✅/❌ | [update/ok] |
+| `docs/architecture/decisions/` | New ADR needed? | ✅/❌ | [create ADR if needed] |
+| Component/service docs | Interface changes reflected | ✅/❌ | [update/ok] |
+| Data model docs | Schema changes reflected | ✅/❌ | [update/ok] |
+| Integration docs | New integrations documented | ✅/❌ | [update/ok] |
+
+**ADR Required When:**
+- New technology or framework introduced
+- Significant pattern change
+- Trade-off decision made (performance vs maintainability, etc.)
+- External service or dependency added
+- Security model changed
+
+**ADR Template Reference:** `ADR-NNN-[title].md` in `docs/architecture/decisions/`
+
+### 5. UPDATE NAVIGATION AND INDEXES (Required)
+
+Verify all navigation files are current:
+
+| File | Check | Status | Action |
+|------|-------|--------|--------|
+| `docs/INDEX.md` | Links to new/moved docs | ✅/❌ | [update] |
+| `docs/implementation/INDEX.md` | Stage links current | ✅/❌ | [update] |
+| `docs/implementation/REGISTER.md` | Progress & status accurate | ✅/❌ | [update] |
+| Stage `INDEX.md` files | Feature listed correctly | ✅/❌ | [update] |
+| Feature folder `INDEX.md` | All docs linked | ✅/❌ | [update] |
+
+**REGISTER.md Updates:**
+- Update counts (backlog, roadmap, in progress, completed)
+- Update feature status and progress percentage
+- Update "last updated" date
+- Move entries between sections if stage changed
+
+### 6. UPDATE EXTERNAL-FACING DOCUMENTATION (Required if applicable)
+
+If implementation affects users or external systems:
+
+| Document | Applicable? | Status | Action |
+|----------|-------------|--------|--------|
+| `README.md` (project root) | Setup/usage changed? | ✅/❌/N/A | [update/ok/na] |
+| `CHANGELOG.md` | User-facing change? | ✅/❌/N/A | [add entry/na] |
+| API documentation | Endpoints changed? | ✅/❌/N/A | [update/na] |
+| User guides | Behavior changed? | ✅/❌/N/A | [update/na] |
+| Environment docs | New env vars/config? | ✅/❌/N/A | [update/na] |
+
+### 7. CROSS-LINK VERIFICATION (Required)
+
+Ensure documentation is interconnected:
+
+- [ ] Feature docs link to related architecture docs
+- [ ] Architecture docs link to implementation details
+- [ ] Issues link to relevant code files and design docs
+- [ ] All internal links resolve (no 404s)
+- [ ] Related features cross-reference each other
+- [ ] ADRs link to affected features
+
+**Run link check:**
+```bash
+# Find broken internal links (markdown)
+grep -r "\]\(./" docs/ | grep -v node_modules
+```
+
+### 8. KNOWLEDGE BASE INTEGRATION (If applicable)
+
+If implementation introduced reusable knowledge:
+
+- [ ] Check if pattern/solution should be added to KB
+- [ ] Search existing KB for overlap (avoid duplication)
+- [ ] If KB article needed, note for `prompt-kb-authoring.txt`
+
+**KB Candidates:**
+- New integration patterns
+- Novel solutions to common problems
+- Architectural decisions with broad applicability
+- Performance optimizations
+- Security patterns
+
+---
+
+## OUTPUT FORMAT (Required Structure)
+
+```markdown
+## Post-Implementation Documentation Report
+
+### Summary
+**Feature/Change:** [name]
+**Implementation Date:** [date]
+**Documentation Status:** ✅ COMPLIANT / ❌ NON-COMPLIANT / ⚠️ PARTIAL
+
+### 1. Change Scope
+- **Type:** [New Feature | Enhancement | Bug Fix | etc.]
+- **Files Modified:** [count]
+- **Architecture Impact:** [None | Minor | Significant]
+- **API Changes:** [Yes/No]
+
+### 2. Lifecycle Stage
+**Current Location:** [path]
+**Correct Location:** [path]
+**Action:** ✅ Correctly placed / ⚠️ Moved to [location] / ❌ Needs manual move
+
+### 3. Documentation Status
+| Category | Required | Exists | Current | Action Taken |
+|----------|----------|--------|---------|--------------|
+| Feature README | ✅ | ✅/❌ | ✅/❌ | [created/updated/ok] |
+| Requirements | ✅ | ✅/❌ | ✅/❌ | [created/updated/ok] |
+| Technical Design | ✅ | ✅/❌ | ✅/❌ | [created/updated/ok] |
+| Acceptance Criteria | ✅ | ✅/❌ | ✅/❌ | [created/updated/ok] |
+| Checklist | ✅ | ✅/❌ | ✅/❌ | [created/updated/ok] |
+| Issues | ⚠️ | ✅/❌ | ✅/❌ | [created/updated/ok/na] |
+| AI Memory | ⚠️ | ✅/❌ | ✅/❌ | [created/updated/ok] |
+| AI Handover | ⚠️ | ✅/❌ | ✅/❌ | [created/updated/ok] |
+| Lessons Learned | [if completed] | ✅/❌ | ✅/❌ | [created/ok/na] |
+
+### 4. Architecture Updates
+| Document | Change Needed | Status | Action |
+|----------|---------------|--------|--------|
+| Overview | [Yes/No] | ✅/❌ | [what was done] |
+| ADRs | [New ADR needed?] | ✅/❌ | [ADR-NNN created/na] |
+| Component docs | [Yes/No] | ✅/❌ | [what was done] |
+
+### 5. Navigation Updates
+| Index/Register | Updated | Status |
+|----------------|---------|--------|
+| docs/INDEX.md | ✅/❌ | [current/updated] |
+| implementation/INDEX.md | ✅/❌ | [current/updated] |
+| implementation/REGISTER.md | ✅/❌ | [current/updated] |
+| Stage INDEX.md | ✅/❌ | [current/updated] |
+
+### 6. External Documentation
+| Document | Applicable | Updated |
+|----------|------------|---------|
+| Project README | ✅/❌ | ✅/❌/N/A |
+| CHANGELOG | ✅/❌ | ✅/❌/N/A |
+| API Docs | ✅/❌ | ✅/❌/N/A |
+
+### 7. Link Verification
+**Broken Links Found:** [count]
+**Links Fixed:** [count]
+
+### 8. KB Candidates
+- [ ] [Pattern/solution to add to KB - or "None identified"]
+
+---
+
+### FINAL STATUS
+
+**Documentation Compliance:** ✅ COMPLETE / ❌ INCOMPLETE
+
+**If INCOMPLETE, remaining actions:**
+1. [ ] [Required action]
+2. [ ] [Required action]
+
+**If COMPLETE:**
+- All documentation exists and is current
+- Feature is in correct lifecycle stage
+- Architecture docs reflect implementation
+- Navigation and indexes updated
+- All links verified working
+```
+
+---
+
+## CRITICAL RULES
+
+- **No orphan implementations.** Every feature must have documentation in the correct stage.
+- **No stale architecture.** If code changed architecture, docs must reflect it.
+- **No broken navigation.** Every INDEX.md and REGISTER.md must be current.
+- **No phantom features.** Don't document what doesn't exist; document what does.
+- **No duplication.** One source of truth per topic; link, don't copy.
+- **Date everything.** Every moved/created doc gets a timestamp.
+- **Archive promptly.** Completed work moves to `completed/` within the session.
+
+---
+
+## SUB-AGENT ORCHESTRATION
+
+Use Task tool to parallelize documentation checks:
+
+```
+Agent 1: Verify documentation exists and check lifecycle stage
+Agent 2: Audit architecture docs for accuracy
+Agent 3: Verify navigation/indexes and check links
+Agent 4: Review external docs (README, CHANGELOG, API docs)
+```
+
+After parallel checks complete, consolidate findings and execute updates sequentially.
+
+---
+
+## WHAT TO DO IF NON-COMPLIANT
+
+1. **Missing documentation:** Create it using templates from `09-documentation-standards.md`
+2. **Wrong lifecycle stage:** Move folder and update all indexes
+3. **Stale architecture docs:** Update immediately with current reality
+4. **Broken navigation:** Fix all INDEX.md and REGISTER.md files
+5. **Missing ADR:** Create using `ADR-NNN-[title].md` template
+6. **KB candidate identified:** Note for follow-up with `prompt-kb-authoring.txt`
+
+**Re-run this check after fixes to confirm compliance.**
+
+---
+
+## Prompt Pack Integration
+
+**Load from** `C:\GitHub\GPTPrompts`:
+- `00-core-behavior.md` (always)
+- `09-documentation-standards.md` (primary reference)
+- `03-quality-guardrails.md` (evidence requirements)
+- `06-development-workflow.md` (lifecycle phases)
+- Add `01-brand-kit.md` if styling documentation
+
+See SHARED_STANDARDS.md for complete integration guidance, KB paths, and MCP best practices.
+
+---
+
+**Documentation compliance is not optional. Every implementation must leave a clear, navigable documentation trail.**

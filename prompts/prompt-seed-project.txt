@@ -1,5 +1,9 @@
 ROLE: Project Seeding Assistant
 
+> **Standards**: See SHARED_STANDARDS.md for tool standards (Task, TodoWrite), prompt pack integration, KB paths, and MCP guidance.
+
+> **Tools Required**: Task, TodoWrite, Read, Edit, Write, Bash, Grep, Glob
+
 Set up a new repository with Alterspective standards, configurations, and references to the prompt pack. Establish a consistent foundation for development.
 
 ## When to Use This Prompt
@@ -15,63 +19,113 @@ Ask or infer:
 - **Type:** Web app / API / CLI / Library / Monorepo.
 - **Tech stack:** Language, framework, runtime.
 - **Target environment:** Node, .NET, Python, etc.
+- **Documentation layout:** select **Standard** (`docs/implementation/...` per `09-documentation-standards.md`) or **Web App Development** (`project/roadmap`, `project/features/{name}/...` per `prompts/web-app-development`).
 
 ### 2. CREATE CORE STRUCTURE
 
 ```
 project-root/
-├── .github/                    # GitHub workflows, templates
-│   ├── ISSUE_TEMPLATE/
-│   ├── PULL_REQUEST_TEMPLATE.md
-│   └── workflows/
-├── .vscode/                    # Editor settings (if VS Code)
-│   └── settings.json
-├── src/                        # Source code
-├── tests/                      # Test files
-├── scripts/                    # Build/dev scripts
-├── docs/                       # Documentation (see below)
-├── .gitignore
-├── .gitattributes
-├── README.md
-└── [config files per stack]
+|---- .github/                    # GitHub workflows, templates
+|   |---- ISSUE_TEMPLATE/
+|   |---- PULL_REQUEST_TEMPLATE.md
+|   \---- workflows/
+|---- .vscode/                    # Editor settings (if VS Code)
+|   \---- settings.json
+|---- Innovation/                 # Isolated feature prototyping (see SHARED_STANDARDS.md)
+|   \---- README.md
+|---- src/                        # Source code
+|---- tests/                      # Test files
+|---- scripts/                    # Build/dev scripts
+|---- docs/                       # Documentation (see below)
+|---- project/                    # Web-app dev lifecycle (if chosen)
+|---- AIFeedback/                 # Optional AI feedback per area (web-app dev mode)
+|---- .gitignore
+|---- .gitattributes
+|---- README.md
+\---- [config files per stack]
 ```
 
-### 2b. CREATE DOCS STRUCTURE
+### 2b. CHOOSE DOCS STRUCTURE
 
-Following `09-documentation-standards.md`:
-
+**Option A: Standard (09-documentation-standards.md)**
 ```
 docs/
-├── INDEX.md                    # Master navigation
-├── TAXONOMY.md                 # Naming conventions
-│
-├── developer/                  # Technical docs
-│   ├── INDEX.md
-│   ├── setup.md
-│   └── contributing.md
-│
-├── architecture/               # System design
-│   ├── INDEX.md
-│   ├── overview.md
-│   └── decisions/
-│       └── INDEX.md
-│
-├── implementation/             # Work tracking
-│   ├── INDEX.md
-│   ├── REGISTER.md            # Progress register
-│   ├── backlog/
-│   │   └── INDEX.md
-│   ├── roadmap/
-│   │   └── INDEX.md
-│   ├── current/
-│   │   └── INDEX.md
-│   └── completed/
-│       └── INDEX.md
-│
-└── AI_STANDARDS.md             # Prompt pack reference
+|---- INDEX.md                    # Master navigation
+|---- TAXONOMY.md                 # Naming conventions
+|
+|---- developer/
+|   |---- INDEX.md
+|   |---- setup.md
+|   \---- contributing.md
+|
+|---- architecture/
+|   |---- INDEX.md
+|   |---- overview.md
+|   \---- decisions/
+|       \---- INDEX.md
+|
+|---- implementation/
+|   |---- INDEX.md
+|   |---- REGISTER.md
+|   |---- backlog/
+|   |   \---- INDEX.md
+|   |---- roadmap/
+|   |   \---- INDEX.md
+|   |---- current/
+|   |   \---- INDEX.md
+|   \---- completed/
+|       \---- INDEX.md
+|
+\---- AI_STANDARDS.md
 ```
 
-Adapt structure to project type (e.g., `pages/` for Next.js, `lib/` for libraries).
+**Option B: Web App Development (per prompts/web-app-development)**
+```
+project/
+|---- roadmap/
+|   |---- ideas.md
+|   \---- timeline.md
+|---- features/
+|   |---- INDEX.md
+|   \---- {feature-name}/
+|       |---- status.md
+|       |---- business-requirement.md
+|       |---- high-level-design.md
+|       |---- low-level-design.md
+|       |---- impact-analysis.md
+|       |---- implementation-plan.md
+|       |---- implementation-checklist.md
+|       |---- ai-instructions/
+|       |   \---- {area}-instruction.md
+|       \---- evidence/
+|           |---- demos/
+|           |---- test-results/
+|           |---- qa-signoff.md
+|           |---- uat-signoff.md
+|           \---- release-notes.md
+|---- debt/
+|   \---- INDEX.md
+|---- known-issues/
+|   \---- INDEX.md
+|---- housekeeping/
+|   |---- latest-report.md
+|   \---- history/
+\---- CURRENT_STATE.md
+
+docs/
+|---- INDEX.md (link to project/ and any system docs)
+|---- architecture/
+|   |---- overview.md
+|   \---- area-{name}.md
+|---- database/
+|   |---- schema.md
+|   |---- erd.md
+|   \---- migrations/
+|---- api/
+|---- decisions/
+```
+
+Adapt structure to project type (e.g., `pages/` for Next.js, `lib/` for libraries). For non-web projects, prefer Option A; for web apps using the multi-agent flow, prefer Option B.
 
 ### 3. ADD STANDARD CONFIGURATIONS
 
@@ -79,6 +133,7 @@ Adapt structure to project type (e.g., `pages/` for Next.js, `lib/` for librarie
 - **`.gitignore`**: Language-appropriate ignores + common patterns.
 - **`.gitattributes`**: Line ending normalization, binary handling.
 - **`README.md`**: Project name, description, setup instructions, link to standards.
+- **`start.bat`** (Windows) / **`start.sh`** (Linux/Mac): Quick start script that checks dependencies, builds if needed, and starts the application.
 
 #### JavaScript/TypeScript Projects
 - **`package.json`**: Scripts for dev, build, test, lint.
@@ -97,6 +152,139 @@ Adapt structure to project type (e.g., `pages/` for Next.js, `lib/` for librarie
 - **`.python-version`**: Python version pinning.
 - **`ruff.toml`** or **`.flake8`**: Linting config.
 
+### 3b. ADD START SCRIPTS
+
+Create quick-start convenience scripts for easy project startup.
+
+#### start.bat (Windows)
+```batch
+@echo off
+REM Change to the directory where this batch file is located
+cd /d "%~dp0"
+
+echo ========================================
+echo Starting [Project Name]
+echo ========================================
+echo.
+
+REM Check if node_modules exists (or venv for Python)
+if not exist "node_modules\" (
+    echo Installing dependencies...
+    call npm install
+    echo.
+)
+
+REM Check if build output exists
+if not exist "dist\" (
+    echo Building project...
+    call npm run build
+    echo.
+)
+
+REM Start the application
+echo Starting application...
+echo.
+call npm start
+```
+
+#### start.sh (Linux/Mac)
+```bash
+#!/bin/bash
+echo "========================================"
+echo "Starting [Project Name]"
+echo "========================================"
+echo
+
+# Check if node_modules exists (or venv for Python)
+if [ ! -d "node_modules" ]; then
+    echo "Installing dependencies..."
+    npm install
+    echo
+fi
+
+# Check if build output exists
+if [ ! -d "dist" ]; then
+    echo "Building project..."
+    npm run build
+    echo
+fi
+
+# Start the application
+echo "Starting application..."
+echo
+npm start
+```
+
+**Adapt for project type**:
+- For Python: Check for `venv/` instead of `node_modules/`, run `pip install -r requirements.txt`, use `python app.py` or `uvicorn main:app`
+- For .NET: Check for `bin/`, run `dotnet restore`, use `dotnet run`
+- For Go: Run `go mod download`, use `go run main.go`
+
+### 3c. CREATE INNOVATION FOLDER
+
+Create **`Innovation/README.md`** with the Innovation & Isolation Testing Pattern guidance:
+
+```markdown
+# Innovation Folder
+
+Build complex features here first, in isolation, before integrating into the main application.
+
+## Purpose
+This folder enables rapid, risk-free development of complex features by allowing you to:
+- Build standalone implementations without main app dependencies
+- Test and iterate quickly with AI assistance
+- Validate the approach before integration
+- Design clean interfaces through forced isolation
+
+## When to Use
+- Large/complex components (>200 LOC or >3 files)
+- Unfamiliar technologies or libraries
+- High-risk implementations (security, performance-critical)
+- Novel algorithms or complex business logic
+- Reusable components that may span projects
+- Unknown requirements requiring experimentation
+
+## Structure
+Each innovation feature should have:
+```
+Innovation/[feature-name]/
+├── README.md               # What we're testing, why isolated
+├── package.json            # Feature dependencies (if needed)
+├── src/
+│   └── index.ts           # CLI entry for testing
+├── tests/                 # Tests for isolated feature
+└── integration-notes.md   # How to integrate into main app
+```
+
+## Workflow
+1. **Create**: Make `Innovation/[feature-name]/` folder
+2. **Build**: Implement as standalone CLI/module
+3. **Test**: Iterate rapidly with fast feedback
+4. **Validate**: Ensure it does what you need
+5. **Design**: Document integration points
+6. **Integrate**: Move to main app with adapters
+7. **Cleanup**: Archive or delete innovation code
+
+## Benefits
+- ✅ Faster iteration (no main app complexity)
+- ✅ Easier testing (no mocks required)
+- ✅ Lower risk (experimentation is safe)
+- ✅ Better design (forces clean interfaces)
+- ✅ AI-friendly (aggressive experimentation welcome)
+
+## Example
+Instead of building a complex image processor directly in `src/processors/`,
+build it first as `Innovation/image-processor/src/index.ts` with a simple CLI:
+```bash
+node Innovation/image-processor/src/index.ts input.jpg --resize=800x600
+```
+Once it works perfectly, integrate it into the main app.
+
+## See Also
+- `C:\GitHub\GPTPrompts\prompts\SHARED_STANDARDS.md` - Full Innovation pattern documentation
+- `C:\GitHub\GPTPrompts\prompts\prompt-plan.txt` - How to plan with isolation phases
+```
+
 ### 4. ADD ALTERSPECTIVE STANDARDS REFERENCE
 
 Create **`docs/AI_STANDARDS.md`**:
@@ -110,38 +298,35 @@ This project follows Alterspective development standards.
 `C:\GitHub\GPTPrompts`
 
 ## Core Standards
-- `00-core-behavior.md` — Identity, ethics, calibrated autonomy
-- `01-brand-kit.md` — Visual/brand guidelines (if UI work)
-- `02-modality-rules.md` — Output rules by type
-- `03-quality-guardrails.md` — Architecture, testing, docs
-- `04-testing-standards.md` — Testing ethics and evidence
-- `05-security-standards.md` — Security requirements
-- `06-development-workflow.md` — Implementation lifecycle
-- `07-code-quality.md` — SOLID, file sizes, TypeScript
-- `08-multi-agent.md` — Sub-agent orchestration
-- `09-documentation-standards.md` — Docs structure, navigation
+- `00-core-behavior.md` - Identity, ethics, calibrated autonomy
+- `01-brand-kit.md` - Visual/brand guidelines (if UI work)
+- `02-modality-rules.md` - Output rules by type
+- `03-quality-guardrails.md` - Architecture, testing, docs
+- `04-testing-standards.md` - Testing ethics and evidence
+- `05-security-standards.md` - Security requirements
+- `06-development-workflow.md` - Implementation lifecycle
+- `07-code-quality.md` - SOLID, file sizes, TypeScript
+- `08-multi-agent.md` - Task tool orchestration
+- `09-documentation-standards.md` - Docs structure, navigation
 
 ## Operational Prompts
-- `prompt-plan.txt` — Comprehensive planning
-- `prompt-seed-project.txt` — Repository setup
-- `prompt-continue.txt` — Multi-step implementation
-- `prompt-handover.txt` — Session handover
-- `prompt-review.txt` — Code review
-- `prompt-testing.txt` — QA/UX testing
-- `prompt-fix.txt` — Bug fixing
-- `prompt-refactor.txt` — Code improvement
-- `prompt-security-review.txt` — Security audit
+- `prompt-plan.txt` - Comprehensive planning
+- `prompt-seed-project.txt` - Repository setup
+- `prompt-continue.txt` - Multi-step implementation
+- `prompt-handover.txt` - Session handover
+- `prompt-review.txt` - Code review
+- `prompt-testing.txt` - QA/UX testing
+- `prompt-fix.txt` - Bug fixing
+- `prompt-refactor.txt` - Code improvement
+- `prompt-security-review.txt` - Security audit
 
 ## Knowledge Bases
 - Sharedo: `C:\GitHub\LearnSD\KB`
 - General: `C:\GitHub\LearnSD\GeneralKB`
 
-## AI Onboarding Path
-1. `docs/INDEX.md` — Project overview
-2. `docs/implementation/REGISTER.md` — Current state
-3. `docs/implementation/current/[feature]/README.md` — Feature context
-4. `docs/implementation/current/[feature]/checklist.md` — Progress
-5. `docs/implementation/current/[feature]/ai-memory.md` — Preserved context
+## AI Onboarding Path (choose based on layout)
+- **Standard:** `docs/INDEX.md` → `docs/implementation/REGISTER.md` → `docs/implementation/current/[feature]/README.md` → `checklist.md` → `ai-memory.md`/`ai-handover.md`.
+- **Web App Development:** `project/roadmap/timeline.md` → `project/features/[feature]/status.md` → `implementation-plan.md` → `implementation-checklist.md` → `ai-instructions/{area}-instruction.md` → evidence (`demos/`, `test-results/`, `qa-signoff.md`, `uat-signoff.md`, `release-notes.md`).
 
 ## Usage
 When prompting AI assistants, include the postfix:
@@ -207,16 +392,18 @@ Update README.md with:
 - Prerequisites (runtime versions, tools).
 - Installation steps.
 - Development commands.
-- Link to AI standards reference.
+- Quick start instructions (mention start.bat/start.sh for convenience).
+- Link to AI standards reference and note which documentation layout was applied (Standard vs Web App Development). Do not mix both in the same repo unless explicitly required.
 
 ## Output Checklist
 After seeding, verify:
 - [ ] `.gitignore` covers dependencies, build output, env files.
 - [ ] README has project description and setup steps.
-- [ ] `docs/INDEX.md` exists with navigation structure.
-- [ ] `docs/AI_STANDARDS.md` references prompt pack.
-- [ ] `docs/implementation/` structure exists with INDEX.md files.
-- [ ] `docs/implementation/REGISTER.md` initialized.
+- [ ] `start.bat` (Windows) and/or `start.sh` (Linux/Mac) created for easy project startup.
+- [ ] **`Innovation/` folder created** with Innovation/README.md for isolated feature development.
+- [ ] Chosen docs layout is clear and consistent (Standard or Web App Development).
+- [ ] Standard layout: `docs/INDEX.md`, `docs/AI_STANDARDS.md`, `docs/implementation/` structure with INDEX.md files and `REGISTER.md` initialized.
+- [ ] Web app layout: `project/roadmap`, `project/features/` (with INDEX.md), `project/housekeeping/`, `project/debt/`, `project/known-issues/`, and `docs/` references to architecture/area docs.
 - [ ] Linting/formatting configs present.
 - [ ] Editor settings included.
 - [ ] Initial commit is clean.
@@ -225,11 +412,10 @@ After seeding, verify:
 
 ## Prompt Pack Integration
 
-Use the Alterspective prompt pack in C:\GitHub\GPTPrompts.
-Load 00-core-behavior.md, plus only the relevant bundle (see postfix.md for details):
-- Seeding: 02-modality-rules.md, 03-quality-guardrails.md, 06-development-workflow.md, 09-documentation-standards.md.
-- Add 07-code-quality.md when adding code scaffolds; add 01-brand-kit.md for UI-heavy projects; add 05-security-standards.md when auth/data-sensitive.
+**Load from** `C:\GitHub\GPTPrompts`:
+- `00-core-behavior.md` (always)
+- `02-modality-rules.md`, `03-quality-guardrails.md`, `06-development-workflow.md`, `09-documentation-standards.md`
+- Add `07-code-quality.md` for code scaffolds; `01-brand-kit.md` for UI-heavy projects; `05-security-standards.md` for auth/data-sensitive
+- For Web App Development layout: `prompts/web-app-development/README.md` and associated prompt set
 
-Knowledge bases: for Sharedo, consult C:\GitHub\LearnSD\KB; for general knowledge, consult C:\GitHub\LearnSD\GeneralKB. Before updating knowledge, read and follow C:\GitHub\LearnSD\GeneralKB\KB_GOVERNANCE.md. Sharedo entry points: C:\GitHub\LearnSD\KB\README.md and C:\GitHub\LearnSD\KB\kb_index.json.
-
-Apply only relevant rules; restate the brief and assumptions first, then execute. Summarize results and next steps with evidence. If you create durable knowledge, update the appropriate KB or state why you cannot.
+See SHARED_STANDARDS.md for complete integration guidance, KB paths, and MCP best practices.

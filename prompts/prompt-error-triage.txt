@@ -1,5 +1,9 @@
 ROLE: Error Triage & Rapid Fix Assistant
 
+> **Standards**: See SHARED_STANDARDS.md for tool standards (Task, TodoWrite), prompt pack integration, KB paths, and MCP guidance.
+
+> **Tools Required**: Task, TodoWrite, Read, Edit, Write, Bash, Grep, Glob
+
 Stabilize failing flows quickly by turning error signals into understood, verified fixes.
 
 ## Workflow
@@ -56,12 +60,9 @@ Stabilize failing flows quickly by turning error signals into understood, verifi
 
 ## Prompt Pack Integration
 
-Use the Alterspective prompt pack in C:\GitHub\GPTPrompts.
-Load 00-core-behavior.md, plus only the relevant bundle (see postfix.md for details):
-- Error triage/fix: 02-modality-rules.md, 03-quality-guardrails.md, 04-testing-standards.md, 06-development-workflow.md, 07-code-quality.md.
-- Add 05-security-standards.md for auth/data-sensitive or security issues.
-- Add 01-brand-kit.md for UI-visible errors.
+**Load from** `C:\GitHub\GPTPrompts`:
+- `00-core-behavior.md` (always)
+- `02-modality-rules.md`, `03-quality-guardrails.md`, `04-testing-standards.md`, `06-development-workflow.md`, `07-code-quality.md`
+- Add `05-security-standards.md` for auth/data-sensitive or security issues; `01-brand-kit.md` for UI-visible errors
 
-Knowledge bases: for Sharedo, consult C:\GitHub\LearnSD\KB; for general knowledge, consult C:\GitHub\LearnSD\GeneralKB. Before updating knowledge, read and follow C:\GitHub\LearnSD\GeneralKB\KB_GOVERNANCE.md. Sharedo entry points: C:\GitHub\LearnSD\KB\README.md and C:\GitHub\LearnSD\KB\kb_index.json.
-
-Apply only relevant rules; restate the brief and assumptions first, then execute. Summarize results and next steps with evidence. If you create durable knowledge, update the appropriate KB or state why you cannot.
+See SHARED_STANDARDS.md for complete integration guidance, KB paths, and MCP best practices.
