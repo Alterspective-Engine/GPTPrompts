@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FileLock",
+  "description": "File lock record for preventing concurrent modifications in multi-agent development",
+  "type": "object",
+  "required": ["path", "pathHash", "lockedBy", "lockedAt", "operation"],
+  "properties": {
+    "path": {
+      "type": "string",
+      "description": "Relative path from project root to the locked file"
+    },
+    "pathHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{8}$",
+      "description": "Short hash of path for lock file naming"
+    },
+    "lockedBy": {
+      "type": "string",
+      "description": "Agent ID that holds the lock"
+    },
+    "lockedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the lock was acquired"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the lock automatically expires (default: 1 hour after lockedAt)"
+    },
+    "operation": {
+      "enum": ["read", "edit", "create", "delete"],
+      "description": "Type of operation being performed"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Human-readable reason for the lock"
+    },
+    "taskId": {
+      "type": "string",
+      "description": "Task ID associated with this lock"
+    },
+    "worktree": {
+      "type": "string",
+      "description": "Path to the worktree where agent is working"
+    }
+  }
+}

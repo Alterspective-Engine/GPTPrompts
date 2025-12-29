@@ -1,0 +1,140 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CoordinationState",
+  "description": "Global coordination state for multi-agent project. Stored in worktrees/coordination.json",
+  "type": "object",
+  "required": ["projectId", "version", "lastUpdated", "agents", "tasks", "phases"],
+  "properties": {
+    "projectId": {
+      "type": "string",
+      "description": "Unique project identifier"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Schema version for forward compatibility"
+    },
+    "lastUpdated": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lastUpdatedBy": {
+      "type": "string",
+      "description": "Agent ID that last updated this state"
+    },
+    "phases": {
+      "type": "object",
+      "description": "Current phase status for the project",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "gates": {
+          "type": "object",
+          "description": "Phase gate validation results",
+          "patternProperties": {
+            "^[0-5]$": {
+              "type": "object",
+              "properties": {
+                "status": { "enum": ["pending", "passed", "failed"] },
+                "validatedAt": { "type": "string", "format": "date-time" },
+                "blockers": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "agents": {
+      "type": "object",
+      "description": "Map of agent ID to agent state",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "role": { "enum": ["architect", "developer", "qa", "housekeeping"] },
+          "area": { "type": "string" },
+          "worktree": { "type": "string" },
+          "status": { "enum": ["idle", "working", "blocked", "offline"] },
+          "currentTask": { "type": "string" },
+          "lastHeartbeat": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "description": "All tasks in the project",
+      "items": {
+        "$ref": "task-state.schema.json"
+      }
+    },
+    "locks": {
+      "type": "array",
+      "description": "Current file locks",
+      "items": {
+        "$ref": "file-lock.schema.json"
+      }
+    },
+    "worktrees": {
+      "type": "object",
+      "description": "Git worktree configuration",
+      "properties": {
+        "main": {
+          "type": "string",
+          "description": "Path to main working tree"
+        },
+        "container": {
+          "type": "string",
+          "description": "Path to worktrees container directory"
+        },
+        "agents": {
+          "type": "object",
+          "description": "Map of agent ID to worktree path",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "features": {
+      "type": "array",
+      "description": "Feature tracking",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "pattern": "^FEAT-[0-9]{3}-.*$" },
+          "name": { "type": "string" },
+          "status": {
+            "enum": ["idea", "roadmap", "backlog", "in_progress", "dev_complete", "qa", "uat", "done"]
+          },
+          "assignedAgents": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "startedAt": { "type": "string", "format": "date-time" },
+          "completedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "escalations": {
+      "type": "array",
+      "description": "Unresolved escalations",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "taskId": { "type": "string" },
+          "agentId": { "type": "string" },
+          "reason": { "type": "string" },
+          "severity": { "enum": ["low", "medium", "high", "critical"] },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "resolvedAt": { "type": "string", "format": "date-time" },
+          "resolution": { "type": "string" }
+        }
+      }
+    }
+  }
+}

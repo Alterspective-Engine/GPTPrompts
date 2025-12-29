@@ -1,0 +1,307 @@
+# File Lock Protocol for Multi-Agent Development
+
+**Prompt ID**: 16
+**Agent Type**: ALL AGENTS
+**Purpose**: Prevent concurrent file modifications in multi-agent development
+**Required Before**: Any file modification in multi-agent context
+
+---
+
+## Quick Start
+
+Before modifying any file:
+1. Check if lock exists
+2. If locked by another agent: STOP and wait
+3. If unlocked: Acquire lock
+4. Modify file
+5. Commit changes
+6. Release lock
+
+---
+
+## Lock File Location
+
+Locks are stored OUTSIDE worktrees in a shared location:
+
+```
+project-root/
+├── main/                    # Main working tree
+├── worktrees/
+│   ├── locks/               # SHARED LOCK DIRECTORY
+│   │   ├── a1b2c3d4.lock.json
+│   │   └── e5f6g7h8.lock.json
+│   ├── ai-frontend/
+│   └── ai-api/
+```
+
+**Lock File Naming**: `{first-8-chars-of-md5-hash}.lock.json`
+
+---
+
+## Lock File Format
+
+```json
+{
+  "path": "src/areas/frontend/src/App.tsx",
+  "pathHash": "a1b2c3d4",
+  "lockedBy": "agent-frontend",
+  "lockedAt": "2025-12-29T10:30:00Z",
+  "expiresAt": "2025-12-29T11:30:00Z",
+  "operation": "edit",
+  "reason": "Implementing FEAT-001 login component",
+  "taskId": "TASK-20251229-ABC12345",
+  "worktree": "../worktrees/ai-frontend"
+}
+```
+
+---
+
+## Step 1: Check for Existing Lock
+
+Before ANY file modification, check if lock exists:
+
+```bash
+# Calculate path hash (first 8 chars of MD5)
+# Bash example:
+PATH_HASH=$(echo -n "src/areas/frontend/src/App.tsx" | md5sum | cut -c1-8)
+
+# Check if lock exists
+LOCK_FILE="../worktrees/locks/${PATH_HASH}.lock.json"
+if [ -f "$LOCK_FILE" ]; then
+  echo "FILE IS LOCKED"
+  cat "$LOCK_FILE"
+else
+  echo "FILE IS UNLOCKED"
+fi
+```
+
+### If Locked by Another Agent
+
+1. **DO NOT modify the file**
+2. Check lock expiry time
+3. If expired: Override lock (see Step 4)
+4. If not expired: Wait or escalate
+
+### Wait Strategy
+
+```markdown
+## Wait Options
+
+1. **Polling**: Check every 30 seconds for lock release
+2. **Escalation**: If waiting >5 minutes, escalate to Architect
+3. **Alternative**: Work on different file, come back later
+```
+
+---
+
+## Step 2: Acquire Lock
+
+If file is unlocked, create lock file:
+
+```bash
+# Create lock file with your agent details
+cat > "../worktrees/locks/${PATH_HASH}.lock.json" << 'EOF'
+{
+  "path": "src/areas/frontend/src/App.tsx",
+  "pathHash": "a1b2c3d4",
+  "lockedBy": "agent-frontend",
+  "lockedAt": "2025-12-29T10:30:00Z",
+  "expiresAt": "2025-12-29T11:30:00Z",
+  "operation": "edit",
+  "reason": "Implementing FEAT-001 login component",
+  "taskId": "TASK-20251229-ABC12345",
+  "worktree": "../worktrees/ai-frontend"
+}
+EOF
+```
+
+### Lock Validation
+
+After creating lock, verify it's yours (atomic check):
+
+```bash
+OWNER=$(cat "$LOCK_FILE" | grep -o '"lockedBy": "[^"]*"' | cut -d'"' -f4)
+if [ "$OWNER" != "agent-frontend" ]; then
+  echo "RACE CONDITION: Lock acquired by another agent"
+  # Abort modification, wait and retry
+fi
+```
+
+---
+
+## Step 3: Modify File
+
+With lock acquired, you can safely modify the file.
+
+**Best Practices**:
+- Make minimal changes
+- Commit frequently (reduces lock duration)
+- Don't hold locks overnight
+
+---
+
+## Step 4: Release Lock
+
+After committing changes, release the lock:
+
+```bash
+# Delete lock file
+rm "../worktrees/locks/${PATH_HASH}.lock.json"
+```
+
+### Commit + Release Pattern
+
+```bash
+# Recommended: Release lock immediately after commit
+git add src/areas/frontend/src/App.tsx
+git commit -m "feat(FEAT-001): Implement login component"
+rm "../worktrees/locks/${PATH_HASH}.lock.json"
+```
+
+---
+
+## Step 5: Override Expired Locks
+
+Locks expire after 1 hour by default. To override:
+
+```bash
+# Check if lock is expired
+EXPIRES=$(cat "$LOCK_FILE" | grep -o '"expiresAt": "[^"]*"' | cut -d'"' -f4)
+NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+if [[ "$NOW" > "$EXPIRES" ]]; then
+  echo "Lock is EXPIRED, safe to override"
+  # Log the override for audit
+  echo "Override: $LOCK_FILE by agent-api at $NOW (original: $OWNER)" >> "../worktrees/locks/override.log"
+  # Create new lock
+  # ... (same as Step 2)
+else
+  echo "Lock is ACTIVE, cannot override"
+fi
+```
+
+---
+
+## Conflict Resolution
+
+### Scenario: Two Agents Need Same File
+
+If two agents legitimately need the same file:
+
+1. **First**: Check if you can work on different parts
+2. **Second**: Escalate to Architect
+3. **Architect decides**:
+   - Sequential work (A finishes, then B)
+   - Interface boundary (split file into two)
+   - Merge assistance (both work, Architect merges)
+
+### Escalation Template
+
+```markdown
+## Lock Conflict Escalation
+
+**File**: src/areas/frontend/src/App.tsx
+**Current Lock**: agent-frontend (expires in 45 min)
+**Requesting Agent**: agent-api
+**Reason**: Need to add API endpoint reference
+
+**Options**:
+1. Wait for agent-frontend to finish
+2. Request agent-frontend to release early
+3. Create interface boundary (extract shared types)
+```
+
+---
+
+## Integration with Coordination State
+
+Locks should be reflected in `coordination.json`:
+
+```json
+{
+  "locks": [
+    {
+      "path": "src/areas/frontend/src/App.tsx",
+      "pathHash": "a1b2c3d4",
+      "lockedBy": "agent-frontend",
+      "lockedAt": "2025-12-29T10:30:00Z",
+      "expiresAt": "2025-12-29T11:30:00Z",
+      "operation": "edit",
+      "taskId": "TASK-20251229-ABC12345"
+    }
+  ]
+}
+```
+
+---
+
+## Rules Summary
+
+| Rule | Description |
+|------|-------------|
+| **Lock Before Edit** | Always acquire lock before modifying |
+| **Check Expiry** | Expired locks (>1hr) can be overridden |
+| **Commit Fast** | Don't hold locks longer than necessary |
+| **Release After Commit** | Delete lock file after git commit |
+| **No Nested Locks** | One agent, one file at a time |
+| **Escalate Conflicts** | Two agents, same file = Architect decides |
+| **Log Overrides** | Record expired lock overrides in audit log |
+
+---
+
+## Common Patterns
+
+### Pattern 1: Quick Edit
+
+```bash
+# Check, acquire, edit, commit, release
+LOCK_FILE="../worktrees/locks/$(echo -n "$FILE" | md5sum | cut -c1-8).lock.json"
+[ -f "$LOCK_FILE" ] && echo "LOCKED" && exit 1
+# Create lock...
+vim "$FILE"
+git add "$FILE" && git commit -m "..."
+rm "$LOCK_FILE"
+```
+
+### Pattern 2: Batch Edits (Multiple Files)
+
+```bash
+# Lock all files first
+for FILE in file1.ts file2.ts file3.ts; do
+  HASH=$(echo -n "$FILE" | md5sum | cut -c1-8)
+  [ -f "../worktrees/locks/${HASH}.lock.json" ] && echo "BLOCKED on $FILE" && exit 1
+done
+
+# Acquire all locks
+for FILE in file1.ts file2.ts file3.ts; do
+  # Create lock for each...
+done
+
+# Edit all files
+# ...
+
+# Commit all together
+git add file1.ts file2.ts file3.ts
+git commit -m "..."
+
+# Release all locks
+for FILE in file1.ts file2.ts file3.ts; do
+  rm "../worktrees/locks/$(echo -n "$FILE" | md5sum | cut -c1-8).lock.json"
+done
+```
+
+---
+
+## Validation Checklist
+
+Before proceeding, confirm:
+
+- [ ] Lock directory exists (`../worktrees/locks/`)
+- [ ] You know your agent ID
+- [ ] You checked for existing lock
+- [ ] You understand lock expiry (1 hour default)
+- [ ] You have a plan for conflicts
+
+---
+
+**Next Step**: Proceed with your file modification, following the lock protocol.

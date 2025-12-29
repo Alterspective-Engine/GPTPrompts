@@ -1,0 +1,178 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentTaskState",
+  "description": "Structured state schema for multi-agent coordination. Replaces markdown checklists with typed JSON contracts.",
+  "type": "object",
+  "required": ["taskId", "phase", "status", "agent", "boundaries", "artifacts"],
+  "properties": {
+    "taskId": {
+      "type": "string",
+      "pattern": "^TASK-[0-9]{8}-[A-Z0-9]{8}$",
+      "description": "Unique task identifier: TASK-YYYYMMDD-XXXXXXXX"
+    },
+    "featureId": {
+      "type": "string",
+      "pattern": "^FEAT-[0-9]{3}-.*$",
+      "description": "Associated feature: FEAT-###-name"
+    },
+    "phase": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5,
+      "description": "Current phase: 0=Setup, 1=Arch, 2=Design, 3=Impl, 4=QA, 5=Done"
+    },
+    "status": {
+      "enum": ["pending", "in_progress", "blocked", "review", "completed", "failed"],
+      "description": "Current task status"
+    },
+    "agent": {
+      "type": "object",
+      "required": ["id", "role", "worktree"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique agent identifier"
+        },
+        "role": {
+          "enum": ["architect", "developer", "qa", "housekeeping"],
+          "description": "Agent role determining capabilities"
+        },
+        "worktree": {
+          "type": "string",
+          "description": "Path to agent's git worktree"
+        },
+        "startedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastHeartbeat": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "required": ["canModify", "canRead", "cannotTouch"],
+      "description": "File system boundaries for this agent",
+      "properties": {
+        "canModify": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Glob patterns for files agent can modify"
+        },
+        "canRead": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Glob patterns for files agent can read (but not modify)"
+        },
+        "cannotTouch": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Glob patterns for files agent must never access"
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "description": "Files created/modified during this task",
+      "properties": {
+        "created": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Files created by this task"
+        },
+        "modified": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Files modified by this task"
+        },
+        "locked": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Files currently locked by this agent"
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "description": "Other tasks this task depends on",
+      "items": {
+        "type": "object",
+        "required": ["taskId", "status"],
+        "properties": {
+          "taskId": { "type": "string" },
+          "status": {
+            "enum": ["pending", "satisfied", "failed"],
+            "description": "Whether dependency is met"
+          }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "description": "Quality gate validation status",
+      "properties": {
+        "phaseGate": {
+          "enum": ["pending", "passed", "failed"],
+          "description": "Phase transition gate status"
+        },
+        "preQA": {
+          "enum": ["pending", "passed", "failed"],
+          "description": "Pre-QA quality checklist status"
+        },
+        "securityCheck": {
+          "enum": ["pending", "passed", "failed", "not_applicable"]
+        },
+        "accessibilityCheck": {
+          "enum": ["pending", "passed", "failed", "not_applicable"]
+        },
+        "testCoverage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "lastValidated": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "instruction": {
+      "type": "object",
+      "description": "Reference to AI instruction for this task",
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Path to instruction markdown file"
+        },
+        "checklistPath": {
+          "type": "string",
+          "description": "Path to implementation checklist"
+        }
+      }
+    },
+    "escalation": {
+      "type": "object",
+      "description": "Escalation information if task is blocked/failed",
+      "properties": {
+        "reason": { "type": "string" },
+        "escalatedTo": { "type": "string" },
+        "escalatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "description": "Performance metrics for this task",
+      "properties": {
+        "estimatedTokens": { "type": "integer" },
+        "actualTokens": { "type": "integer" },
+        "retryCount": { "type": "integer", "default": 0 },
+        "durationMinutes": { "type": "integer" }
+      }
+    }
+  }
+}
